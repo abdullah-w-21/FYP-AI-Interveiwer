@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import MuiAlert from "@mui/material/Alert";
 import { isEmailAlreadyRegistered, signUp } from '../../Redux/Actions/AuthActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, Link as RouterLink, useNavigate } from "react-router-dom";
 import { signInError } from '../../Redux/Reducers/AuthReducers';
 
 const Signup = () => {
@@ -19,7 +19,7 @@ const Signup = () => {
   const [disable, setDisable] = useState(false);
   const [password, setPassword] = useState("");
   const isLoading = useSelector((state) => state.auth.isLoading);
-  
+
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -32,13 +32,13 @@ const Signup = () => {
   };
 
   const handleuserNameChange = (e) => {
-      setUserName(e.target.value);
+    setUserName(e.target.value);
   };
   const handleEmailChange = (e) => {
-      setEmail(e.target.value);
+    setEmail(e.target.value);
   };
   const handlePasswordChange = (e) => {
-      setPassword(e.target.value);
+    setPassword(e.target.value);
   };
 
   const handleSubmit = async (e) => {
@@ -47,7 +47,7 @@ const Signup = () => {
     try {
       const registered = await isEmailAlreadyRegistered(email)
 
-      if(password.length<6) {
+      if (password.length < 6) {
         setSnackbarMessage("Password should atleast be of 6 characters!");
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
@@ -58,7 +58,7 @@ const Signup = () => {
         setSnackbarOpen(true);
         setEmail("");
         setPassword("");
-      }else if (registered) {
+      } else if (registered) {
         setSnackbarMessage("Email already exists!");
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
@@ -69,7 +69,7 @@ const Signup = () => {
         setSnackbarMessage("Signed up successfully!");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
-      } 
+      }
       setDisable(false);
     } catch (error) {
       console.log(error)
@@ -110,12 +110,14 @@ const Signup = () => {
         </div>
 
         <button type="submit" disabled={disable || isLoading} className="btn btn-primary">{isLoading || disable ? (
-            <CircularProgress sx={{ color: "white" }} size={24} />
-          ) : (
-            "Sign Up"
-          )}</button>
+          <CircularProgress sx={{ color: "white" }} size={24} />
+        ) : (
+          "Sign Up"
+        )}</button>
         <div className="container" style={{ backgroundColor: '#f1f1f1', marginTop: '5%' }}>
-          <p>Already have an account? <a href="/">login</a></p>
+          <p>Already have an account? <Link component={RouterLink} to="/">
+            Login
+          </Link></p>
         </div>
       </form>
       <Snackbar

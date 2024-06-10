@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import MuiAlert from "@mui/material/Alert";
 import { isEmailAlreadyRegistered, signIn } from '../../Redux/Actions/AuthActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, Link as RouterLink, useNavigate } from "react-router-dom";
 import { resetAuth, signInError } from '../../Redux/Reducers/AuthReducers';
 
 const Login = () => {
@@ -22,22 +22,22 @@ const Login = () => {
 
     useEffect(() => {
         if (loginError === "Incorrect email or password.") {
-          setSnackbarMessage("Incorrect email or password.");
-          setSnackbarSeverity("error");
-          setSnackbarOpen(true);
-          setEmail("");
-          setPassword("");
-          setDisable(false);
-        //   dispatch(resetAuth());
+            setSnackbarMessage("Incorrect email or password.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+            setEmail("");
+            setPassword("");
+            setDisable(false);
+            //   dispatch(resetAuth());
         } else if (loginError) {
-          setSnackbarMessage("An error occurred. Please try again.");
-          setSnackbarSeverity("error");
-          setSnackbarOpen(true);
-          setEmail("");
-          setPassword("");
-          setDisable(false);
+            setSnackbarMessage("An error occurred. Please try again.");
+            setSnackbarSeverity("error");
+            setSnackbarOpen(true);
+            setEmail("");
+            setPassword("");
+            setDisable(false);
         }
-      }, [loginError]);
+    }, [loginError]);
 
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
@@ -60,39 +60,39 @@ const Login = () => {
         e.preventDefault();
         setDisable(true);
         try {
-          const registered = await isEmailAlreadyRegistered(email)
-    
-          if(loginError == "Incorrect email or password.") {
-            setSnackbarMessage(loginError);
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
-            setEmail("");
-            setPassword("");
-            dispatch(signInError(""))
-          } else if (!regex.test(email)) {
-            setSnackbarMessage("Please enter valid email!");
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
-            setEmail("");
-            setPassword("");
-          }else if (!registered) {
-            setSnackbarMessage("Email does not exist, want to sign up?");
-            setSnackbarSeverity("error");
-            setSnackbarOpen(true);
-            setEmail("");
-            setPassword("");
-          } else {
-            dispatch(signIn(email, password, navigate))
-            setSnackbarMessage("Logged in successfully!");
-            setSnackbarSeverity("success");
-            setSnackbarOpen(true);
-          } 
-          setDisable(false);
+            const registered = await isEmailAlreadyRegistered(email)
+
+            if (loginError == "Incorrect email or password.") {
+                setSnackbarMessage(loginError);
+                setSnackbarSeverity("error");
+                setSnackbarOpen(true);
+                setEmail("");
+                setPassword("");
+                dispatch(signInError(""))
+            } else if (!regex.test(email)) {
+                setSnackbarMessage("Please enter valid email!");
+                setSnackbarSeverity("error");
+                setSnackbarOpen(true);
+                setEmail("");
+                setPassword("");
+            } else if (!registered) {
+                setSnackbarMessage("Email does not exist, want to sign up?");
+                setSnackbarSeverity("error");
+                setSnackbarOpen(true);
+                setEmail("");
+                setPassword("");
+            } else {
+                dispatch(signIn(email, password, navigate))
+                setSnackbarMessage("Logged in successfully!");
+                setSnackbarSeverity("success");
+                setSnackbarOpen(true);
+            }
+            setDisable(false);
         } catch (error) {
-          console.log(error)
+            console.log(error)
         }
-    
-      }
+
+    }
 
     return (
         <div className="form-contents form-body">
@@ -100,10 +100,10 @@ const Login = () => {
                 <h2 style={{ textAlign: 'center', border: '1px solid', fontWeight: 'bold', background: '#1976d2', color: "white", borderRadius: 'inherit', padding: 'inherit' }}>iPrepare</h2>
                 <h3 style={{ textAlign: 'center' }}>Sign In</h3>
                 <div className="mb-3">
-                <input type="email" value={email} onChange={handleEmailChange} placeholder="Enter your email" className="form-control email" id="email" aria-describedby="emailHelp" required />
+                    <input type="email" value={email} onChange={handleEmailChange} placeholder="Enter your email" className="form-control email" id="email" aria-describedby="emailHelp" required />
                 </div>
                 <div className="password-container mb-3">
-                <input type={passwordVisible ? "text" : "password"} onChange={handlePasswordChange} value={password} placeholder="Enter your password" className="form-control password" id="password" required />
+                    <input type={passwordVisible ? "text" : "password"} onChange={handlePasswordChange} value={password} placeholder="Enter your password" className="form-control password" id="password" required />
                     <span className="input-group-text" id="togglePassword" onClick={togglePasswordVisibility}>
                         {passwordVisible ? (
                             <i className="bi bi-eye-slash">
@@ -128,8 +128,12 @@ const Login = () => {
                     "Login"
                 )}</button>
                 <div className="container" style={{ backgroundColor: '#f1f1f1', marginTop: '5%' }}>
-                    <p>Do not have an account? <a href="/signup">Signup</a></p>
-                    <a href="/forgotpassword">Forgot password?</a>
+                    <p>Do not have an account? <Link component={RouterLink} to="/signup">
+                        Sign Up
+                    </Link></p>
+                    <Link component={RouterLink} to="/forgotpassword">
+                        Forgot password?
+                    </Link>
                 </div>
             </form>
             <Snackbar
