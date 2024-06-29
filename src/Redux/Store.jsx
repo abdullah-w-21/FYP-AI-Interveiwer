@@ -6,6 +6,7 @@ import {
   } from "react-redux";
   import { rootPersistConfig, rootReducer } from "./RootReducer";
 import { resetAuth } from "./Reducers/AuthReducers";
+import { resetGeneration } from "./Reducers/QuestionsReducer";
 // import { resetAccounts } from "./reducers/accountsReducer";
 // import { resetCategories } from "./reducers/categoriesReducer";
 // import { resetTransactions } from "./reducers/transactionsReducer";
@@ -25,7 +26,7 @@ const { dispatch } = store;
 export function logOut() {
     return async () => {
       dispatch(resetAuth());
-    //   dispatch(resetAccounts());
+      dispatch(resetGeneration());
     //   dispatch(resetCategories());
     //   dispatch(resetTransactions());
       await persistor.purge();

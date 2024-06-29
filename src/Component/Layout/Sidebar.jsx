@@ -16,10 +16,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import CategoryIcon from '@mui/icons-material/Category';
-import ListAltIcon from '@mui/icons-material/ListAlt';
+import QuizIcon from '@mui/icons-material/Quiz';
 import LogoutIcon from '@mui/icons-material/Logout'; 
 import { useNavigate } from 'react-router-dom';
 
@@ -76,7 +73,8 @@ export default function Sidebar({ logout, data }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const sidebarData = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' }
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: 'Start Quiz', icon: <QuizIcon />, path: '/startquiz' }
   ];
 
   const navigate = useNavigate();

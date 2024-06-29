@@ -7,6 +7,8 @@ import Login from "../Pages/AuthFlow/Login";
 import Forgotpassword from "../Pages/AuthFlow/Forgotpassword";
 import Layout from "../Layout/Layout";
 import Dashboard from "../Pages/MainFlow/Dashboard/Dashboard";
+import StartQuiz from '../Pages/MainFlow/StartQuiz/StartQuiz';
+import ChatBox from '../Pages/MainFlow/ChatBox/ChatBox';
 
 const RoutesIndex = () => {
   return (
@@ -18,9 +20,9 @@ const RoutesIndex = () => {
           <Route path="/signup" element={<UnProtectedRoutes Component={Signup} />} />
           <Route path="/forgotpassword" element={<UnProtectedRoutes Component={Forgotpassword} />} />
           <Route path="/dashboard" element={<ProtectedRoutes Component={Dashboard} />} />
-          {/* <Route path="/allaccounts" element={<ProtectedRoutes Component={AllAccounts} />} />
-          <Route path="/allcategories" element={<ProtectedRoutes Component={AllCategories} />} />
-          <Route path="/performtransaction" element={<ProtectedRoutes Component={PerformTransactions} />} />
+          <Route path="/startquiz" element={<ProtectedRoutes Component={StartQuiz} />} />
+          <Route path="/chatbox" element={<ProtectedRoutes Component={ChatBox} />} />
+          {/* <Route path="/performtransaction" element={<ProtectedRoutes Component={PerformTransactions} />} />
           <Route path="/alltransactions" element={<ProtectedRoutes Component={AllTransactions} />} /> */}
         </>
       }
