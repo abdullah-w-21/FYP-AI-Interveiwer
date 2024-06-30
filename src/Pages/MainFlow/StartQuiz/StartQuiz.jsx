@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import {
   Button,
+  CircularProgress,
   Container,
   MenuItem,
   Select,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
 import axios from 'axios';
+import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from 'react-router-dom';
 import { generateSuccess } from '../../../Redux/Reducers/QuestionsReducer';
 import { useDispatch } from 'react-redux';
@@ -17,13 +20,24 @@ const StartQuiz = () => {
   const [role, setRole] = useState('');
   const [difficulty, setDifficulty] = useState('');
   const [numQuestions, setNumQuestions] = useState('');
-  const [isLoading, setIsLoading] = useState(false)
-  const [interviewQuestions, setInterviewQuestions] = useState([]);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
   const handleStartQuiz = async (e) => {
-
+    setIsLoading(true);
+    setSnackbarMessage("Wait! Generating questions....");
+    setSnackbarSeverity("info");
+    setSnackbarOpen(true);
     e.preventDefault();
     try {
       const response = await axios.post('http://127.0.0.1:5000', {
@@ -32,7 +46,10 @@ const StartQuiz = () => {
         difficulty,
         num_questions: numQuestions.toString()
       });
-
+      setSnackbarOpen(false);
+      setSnackbarMessage("Get ready....");
+      setSnackbarSeverity("info");
+      setSnackbarOpen(true);
       const questionsArray = JSON.parse(response.data);
       const interviewQuestions = questionsArray["Interview Questions"].map(item => ({
         question: item.question,
@@ -123,14 +140,28 @@ const StartQuiz = () => {
               type="submit"
               variant="contained"
               color="primary"
-              disabled={!topic || !role || !difficulty || !numQuestions}
+              disabled={!topic || !role || !difficulty || !numQuestions || isLoading}
               sx={{ backgroundColor: '#1976d2' }}
             >
-              Start Quiz
+              {isLoading ? (<CircularProgress sx={{ color: "primary" }} size={24} />) : (
+                "Start Quiz")}
             </Button>
           </div>
         </form>
       </Container>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <MuiAlert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 };

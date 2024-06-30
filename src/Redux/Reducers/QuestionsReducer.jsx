@@ -26,6 +26,12 @@ const authSlice = createSlice({
             state.quiz = null;
             state.error = action.payload;
         },
+        updateGeneraion(state, action) {
+            state.quiz = state.quiz.map((question, index) => ({
+                ...question,
+                userResponse: action.payload[index], // Update userResponse for each question
+            }));
+        },
     },
 });
 
@@ -34,6 +40,7 @@ export const {
     resetGeneration,
     generateError,
     generateSuccess,
+    updateGeneraion
 } = authSlice.actions;
 
 export default authSlice.reducer;
