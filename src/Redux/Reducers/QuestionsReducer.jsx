@@ -7,7 +7,7 @@ const initialState = {
     error: null,
 };
 
-const authSlice = createSlice({
+const quizSlice = createSlice({
     name: "questions",
     initialState,
     reducers: {
@@ -26,21 +26,62 @@ const authSlice = createSlice({
             state.quiz = null;
             state.error = action.payload;
         },
-        updateGeneraion(state, action) {
+        updateGeneration(state, action) {
             state.quiz = state.quiz.map((question, index) => ({
                 ...question,
-                userResponse: action.payload[index], // Update userResponse for each question
+                userResponse: action.payload[index],
             }));
         },
+        toggleLock(state, action) {
+            const { index } = action.payload;
+
+            // Toggle the lock state of the selected question
+            state.quiz = state.quiz.map((question, i) => ({
+                ...question,
+                locked: i === index ? !question.locked : question.locked,
+            }));
+
+            // Set the next question's locked state to false
+            if (index + 1 < state.quiz.length) {
+                state.quiz[index + 1].locked = false;
+            }
+        },
+        setIsGenerated(state, action) {
+            const { index } = action.payload;
+
+            state.quiz = state.quiz.map((question, i) => ({
+                ...question,
+                isGenerated: i === index ? true : question.isGenerated,
+            }));
+        },
+        setGrading(state, action) {
+            const { index, score, feedback, explanation } = action.payload;
+
+            state.quiz = state.quiz.map((question, i) => {
+                if (i === index) {
+                    return {
+                        ...question,
+                        score,
+                        feedback,
+                        explanation,
+                    };
+                }
+                return question;
+            });
+        },
+        
     },
 });
 
 
 export const {
+    setGrading,
     resetGeneration,
     generateError,
+    setIsGenerated,
     generateSuccess,
-    updateGeneraion
-} = authSlice.actions;
+    updateGeneration,
+    toggleLock
+} = quizSlice.actions;
 
-export default authSlice.reducer;
+export default quizSlice.reducer;

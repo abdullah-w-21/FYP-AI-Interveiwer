@@ -51,9 +51,11 @@ const StartQuiz = () => {
       setSnackbarSeverity("info");
       setSnackbarOpen(true);
       const questionsArray = JSON.parse(response.data);
-      const interviewQuestions = questionsArray["Interview Questions"].map(item => ({
+      const interviewQuestions = questionsArray["Interview Questions"].map((item, index) => ({
         question: item.question,
-        answer: item.answer
+        answer: item.answer,
+        locked : index == 0 ? false : true,
+        isGenerated: false
       }));
 
       console.log(interviewQuestions);
@@ -130,7 +132,7 @@ const StartQuiz = () => {
             margin="normal"
             required
           >
-            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={2}>5</MenuItem>
             <MenuItem value={10}>10</MenuItem>
             <MenuItem value={15}>15</MenuItem>
             <MenuItem value={20}>20</MenuItem>
