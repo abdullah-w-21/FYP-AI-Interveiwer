@@ -21,7 +21,7 @@ const TypingEffect = ({ text, index }) => {
           dispatch(setIsGenerated({ index }));
         }
       }
-    }, 100);
+    }, 50);
 
     const cursorInterval = setInterval(() => {
       setShowCursor((prev) => !prev);
