@@ -39,6 +39,9 @@ const ChatBox = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [errorGrading, setErrorGrading] = useState(false);
+  const [lastUserResponse, setLastUserResponse] = useState("");
+
 
   const handleAnswerChange = (event, index) => {
     const newResponses = [...userResponses];
@@ -82,6 +85,7 @@ const ChatBox = () => {
     console.log("Submitted Answers:", userResponses);
     setIsLoading(true);
     try {
+      let lastResponse = "";
       for (let i = 0; i < userResponses.length; i++) {
         const response = await axios.post("http://127.0.0.1:5000/grade", {
           api_answer: questionsArray[i].answer,
@@ -98,14 +102,16 @@ const ChatBox = () => {
           })
         );
         console.log("index", i, "grading", grading.score, "feedback", grading.feedback, "explanation", grading.explanation)
+        lastResponse = userResponses[i];
       }
       setIsLoading(false);
       navigate("/feedback");
     } catch (error) {
-
       console.error("Error grading answers:", error);
       setIsLoading(false);
-      // Handle error state or show an error message
+      setErrorGrading(true);
+      setLastUserResponse(lastResponse);
+      dispatch(toggleLock({ index: questionsArray.length - 1 }));
     }
     setTimeout(() => {
       dispatch(toggleLock({ index: questionsArray.length - 1 }));
@@ -143,9 +149,10 @@ const ChatBox = () => {
               <TextField
                 label="Your Answer"
                 variant="outlined"
+                onChange={(e) => handleAnswerChange(e, index)}
+                value={errorGrading && index === questionsArray.length - 1 ? lastUserResponse : userResponses[index] || ''}
                 multiline
                 rows={5}
-                onChange={(e) => handleAnswerChange(e, index)}
                 fullWidth
                 margin="normal"
                 required

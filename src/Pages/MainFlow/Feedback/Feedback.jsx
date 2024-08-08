@@ -9,28 +9,13 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 const Feedback = () => {
-  const navigate = useNavigate();
   const questionsArray = useSelector((state) => state.questions.quiz);
-  const [isLoading, setIsLoading] = useState(false);
-  const [userResponses, setUserResponses] = useState([]);
   const [expandedIndex, setExpandedIndex] = useState(-1); // Track which card is expanded, -1 for none
 
   const handleToggleExpand = (index) => {
     setExpandedIndex(index === expandedIndex ? -1 : index); // Toggle collapse/expand
-  };
-
-  // Handle submit answers function
-  const handleSubmitAnswers = () => {
-    setIsLoading(true);
-    // Dispatch update generation action with userResponses
-    console.log("Submitted Answers:", userResponses);
-    setTimeout(() => {
-      setIsLoading(false);
-      navigate("/feedback");
-    }, 2000);
   };
 
   return (

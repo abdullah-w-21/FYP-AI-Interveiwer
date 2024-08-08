@@ -64,6 +64,10 @@ const StartQuiz = () => {
 
     } catch (error) {
       console.error('Error fetching data:', error);
+      setSnackbarMessage("Could not get response, please try again!");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setIsLoading(false);
     }
   };
 
