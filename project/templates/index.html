@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+  <title>Interviewbot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital@1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  </head>
+  <body>
+    <div class="heading-box">
+    </div>
+    <div class="boxed">
+      <div class="chatbox-parent">
+        <h1>Interview BOT</h1>
+        <div id="chatbox">
+          <i class="fa-solid fa-robot fa-beat fa-xl"></i>
+          <p class="botText">
+            <span>Hi, I am an interview bot and I will evaluate you!</span>
+          </p>
+        </div>
+        <div id="userInput">
+          <input id="textInput" type="text" name="msg" placeholder="Enter message here..." />
+          <i class="fa-solid fa-user fa-fade fa-xl"></i>
+          <button id="startInterviewButton" onclick="startInterview()">Start Interview</button>
+        </div>
+      </div>
+      <div class="imgar">
+        <img class="animated-gif" src="{{url_for('static', filename='hi2.gif')}}">
+      </div>
+    </div>
+    <script>
+
+var isBotTurn = true;  // indicates bot turn
+    var currentQuestion = "";  // stores the current question
+
+    function startInterview() {
+        if (isBotTurn) {
+            // Get the first question from the Flask app
+            $.get("/interview").done(function(data) {
+                currentQuestion = data.result;
+                displayBotMessage(currentQuestion);
+                isBotTurn = false;
+            });
+        } else {
+            // User response variable
+            var userResponse = $("#textInput").val();
+            displayUserMessage(userResponse);
+
+            // Sends userResponse to flask and get the next question and feedback
+            $.post("/interview", { user_response: userResponse }).done(function(data) {
+                currentQuestion = data.next_question;
+                var feedback = data.feedback;
+                displayBotMessage(feedback);
+                displayBotMessage(currentQuestion);
+
+                $("#textInput").val("");  // clearing input fields
+            });
+            isBotTurn = true;
+        }
+    }
+
+//func to displays bots output
+  function displayBotMessage(message) {
+    var botHtml = '<p class="botText"><span>' + message + "</span></p>";
+    $("#chatbox").append(botHtml);
+    document
+      .getElementById("userInput")
+      .scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+
+//func to display users msg in the html
+  function displayUserMessage(message) {
+    var userHtml = '<p class="userText"><span>' + message + "</span></p>";
+    $("#chatbox").append(userHtml);
+    document
+      .getElementById("userInput")
+      .scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+
+    </script>
+
+      <style>
+          body {
+    font-family: 'Noto Sans', sans-serif;
+    background-color: #EEEEEE;
+
+  }
+
+  h1 {
+    background-color: #6C6CCC;
+    color: White;
+    font-size: 2em;
+    margin: 0;
+
+  }
+  .giphy{
+
+  }
+  .chatbox-parent{
+    width: 60%;
+    margin-left: 300px;
+    margin-top: 150px;
+    border: 2px grey ;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  }
+  #chatbox {
+    margin-left: 80px;
+    width: 40%;
+    margin-top: 80px;
+  }
+  #userInput {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    margin-top: 80px;
+
+
+  }
+  #userInput i {
+    margin-left: 10px;
+  }
+  #textInput {
+    width: 80%;
+    border: none;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 17px;
+    border-radius: 10px;
+    height: 50px;
+   margin-left: 80px;
+
+
+  }
+  .userText {
+    color: black;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 17px;
+
+    line-height: 30px;
+
+
+  }
+  .userText span {
+    background-color: #C8C8C8;
+    padding: 10px;
+    border-radius: 2px;
+    position: relative;
+    left: 500px;
+
+
+  }
+  .botText {
+    color:white;
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    text-align: left;
+    line-height: 30px;
+
+  }
+  .botText span {
+    background-color:#6C6CCC;
+    padding: 10px;
+    border-radius: 2px;
+  }
+  #tidbit {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+  }
+  .boxed {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    margin-top: 60px;
+
+    background-image: url('static', filename='hi2.gif');
+    background-position: right;
+    background-repeat: no-repeat,repeat;
+
+  }
+.imgar {
+margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    margin-top: 60px;
+    background-position: right;
+    background-repeat: no-repeat,repeat;
+}
+      </style>
+    </div>
+  </body>
+</html>
