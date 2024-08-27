@@ -1,21 +1,16 @@
 import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  Typography,
-  IconButton,
-  Collapse,
-} from "@mui/material";
+import { Card, CardContent, Typography, IconButton, Collapse } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 const Feedback = () => {
-  const questionsArray = useSelector((state) => state.questions.quiz);
-  const [expandedIndex, setExpandedIndex] = useState(-1); // Track which card is expanded, -1 for none
+  const location = useLocation();
+  const { quizData } = location.state || { quizData: { questions: [] } };
+  const [expandedIndex, setExpandedIndex] = useState(-1);
 
   const handleToggleExpand = (index) => {
-    setExpandedIndex(index === expandedIndex ? -1 : index); // Toggle collapse/expand
+    setExpandedIndex(index === expandedIndex ? -1 : index);
   };
 
   return (
@@ -25,7 +20,7 @@ const Feedback = () => {
           Feedbacks
         </Typography>
       </div>
-      {questionsArray.map((questionsData, index) => (
+      {quizData.questions.map((questionsData, index) => (
         <Card
           key={index}
           variant="outlined"

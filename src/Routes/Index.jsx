@@ -10,6 +10,7 @@ import Dashboard from "../Pages/MainFlow/Dashboard/Dashboard";
 import StartQuiz from '../Pages/MainFlow/StartQuiz/StartQuiz';
 import ChatBox from '../Pages/MainFlow/ChatBox/ChatBox';
 import Feedback from '../Pages/MainFlow/Feedback/Feedback';
+import History from '../Pages/MainFlow/History/History';
 
 const RoutesIndex = () => {
   return (
@@ -24,7 +25,7 @@ const RoutesIndex = () => {
           <Route path="/startquiz" element={<ProtectedRoutes Component={StartQuiz} />} />
           <Route path="/chatbox" element={<ProtectedRoutes Component={ChatBox} />} />
           <Route path="/feedback" element={<ProtectedRoutes Component={Feedback} />} />
-          {/* <Route path="/alltransactions" element={<ProtectedRoutes Component={AllTransactions} />} /> */}
+          <Route path="/history" element={<ProtectedRoutes Component={History} />} />
         </>
       }
     </Routes>

@@ -18,6 +18,7 @@ import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import QuizIcon from '@mui/icons-material/Quiz';
 import LogoutIcon from '@mui/icons-material/Logout'; 
+import HistoryIcon from '@mui/icons-material/History';
 import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -74,7 +75,8 @@ export default function Sidebar({ logout, data }) {
   const [open, setOpen] = React.useState(false);
   const sidebarData = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Start Quiz', icon: <QuizIcon />, path: '/startquiz' }
+    { text: 'Start Quiz', icon: <QuizIcon />, path: '/startquiz' },
+    { text: 'History', icon: <HistoryIcon />, path: '/history' },
   ];
 
   const navigate = useNavigate();

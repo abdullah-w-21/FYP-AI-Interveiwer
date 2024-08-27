@@ -32,6 +32,7 @@ const ChatBox = () => {
   const navigate = useNavigate();
   const questionsArray = useSelector((state) => state.questions.quiz);
   const lockedState = useSelector((state) => state.questions.quiz);
+  const userId = useSelector((state) => state.auth.user.uid);
   const [lockedIndex, setLockedIndex] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [userResponses, setUserResponses] = useState([]);
@@ -83,15 +84,15 @@ const ChatBox = () => {
     setIsLoading(true);
     dispatch(updateGeneration(userResponses));
     console.log("Submitted Answers:", userResponses);
-    setIsLoading(true);
+    let gradingResults = [];
+
     try {
-      let lastResponse = "";
       for (let i = 0; i < userResponses.length; i++) {
         const response = await axios.post("http://127.0.0.1:5000/grade", {
           api_answer: questionsArray[i].answer,
           user_answer: userResponses[i],
         });
-        console.log(JSON.parse(response.data))
+
         const grading = JSON.parse(response.data);
         dispatch(
           setGrading({
@@ -101,22 +102,34 @@ const ChatBox = () => {
             explanation: grading.explanation,
           })
         );
-        console.log("index", i, "grading", grading.score, "feedback", grading.feedback, "explanation", grading.explanation)
-        lastResponse = userResponses[i];
+
+        gradingResults.push({
+          question: questionsArray[i].question,
+          answer: questionsArray[i].answer,
+          userResponse: userResponses[i] || "",
+          score: grading.score || "0",
+          feedback: grading.feedback || "",
+          explanation: grading.explanation || "",
+        });
       }
+
+      // Send the entire array as a single document
+      await axios.post("http://127.0.0.1:5001/api/quiz", {
+        quizId: userId,
+        questions: gradingResults,
+      });
+
       setIsLoading(false);
-      navigate("/feedback");
+      navigate("/history");
     } catch (error) {
       console.error("Error grading answers:", error);
       setIsLoading(false);
       setErrorGrading(true);
-      setLastUserResponse(lastResponse);
-      dispatch(toggleLock({ index: questionsArray.length - 1 }));
     }
+
     setTimeout(() => {
       dispatch(toggleLock({ index: questionsArray.length - 1 }));
       setIsLoading(false);
-      // navigate("/feedback");
     }, 2000);
   };
 
@@ -150,7 +163,11 @@ const ChatBox = () => {
                 label="Your Answer"
                 variant="outlined"
                 onChange={(e) => handleAnswerChange(e, index)}
-                value={errorGrading && index === questionsArray.length - 1 ? lastUserResponse : userResponses[index] || ''}
+                value={
+                  errorGrading && index === questionsArray.length - 1
+                    ? lastUserResponse
+                    : userResponses[index] || ""
+                }
                 multiline
                 rows={5}
                 fullWidth
