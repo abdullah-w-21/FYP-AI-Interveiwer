@@ -75,7 +75,7 @@ export default function Sidebar({ logout, data }) {
   const [open, setOpen] = React.useState(false);
   const sidebarData = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Start Quiz', icon: <QuizIcon />, path: '/startquiz' },
+    { text: 'Start Quiz', icon: <QuizIcon />, path: '/typeselect' },
     { text: 'History', icon: <HistoryIcon />, path: '/history' },
   ];
 

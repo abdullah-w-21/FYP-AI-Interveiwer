@@ -5,7 +5,7 @@ import { setIsGenerated } from "../../../Redux/Reducers/QuestionsReducer";
 const TypingEffect = ({ text, index }) => {
   const dispatch = useDispatch();
   const [currentText, setCurrentText] = useState("");
-  const [showCursor, setShowCursor] = useState(true); // State to toggle cursor
+  const [showCursor, setShowCursor] = useState(true);
   const quiz = useSelector((state) => state.questions.quiz);
   const isGenerated = quiz[index]?.isGenerated;
 

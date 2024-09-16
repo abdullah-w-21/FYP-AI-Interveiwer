@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import {
   getFirestore,
   doc,
@@ -12,21 +12,21 @@ import {
   getDocs,
   deleteDoc,
   serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 import {
   getAuth,
   sendPasswordResetEmail,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDI8zJPtwXyXmt1mxYOqbGBpmVthYMIEtg",
-  authDomain: "iprepare-36293.firebaseapp.com",
-  projectId: "iprepare-36293",
-  storageBucket: "iprepare-36293.appspot.com",
-  messagingSenderId: "886233027504",
-  appId: "1:886233027504:web:046a228f962ddbadcf7c75"
+  apiKey: "AIzaSyB_-vGdwbyjBEUQYngGYSSHJ_6CTsVH9oQ",
+  authDomain: "iprepare-2ee99.firebaseapp.com",
+  projectId: "iprepare-2ee99",
+  storageBucket: "iprepare-2ee99.appspot.com",
+  messagingSenderId: "366359177472",
+  appId: "1:366359177472:web:1f89fc1a7180a46ec46be5"
 };
 
 export const app = initializeApp(firebaseConfig);
