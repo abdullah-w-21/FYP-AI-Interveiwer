@@ -20,7 +20,7 @@ const quizSchema = new mongoose.Schema({
   userResponse: String,
   score: String,
   feedback: String,
-  explanation: String,
+  explanation: String,S
 });
 
 // Create Quiz model
