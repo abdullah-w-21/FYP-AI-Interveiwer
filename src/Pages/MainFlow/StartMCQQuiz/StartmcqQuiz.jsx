@@ -12,11 +12,16 @@ import {
 import axios from "axios";
 import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
-import { generateSuccess } from "../../../Redux/Reducers/QuestionsReducer";
+import {
+  generateSuccess,
+  updateQuizData,
+  updateQuizType,
+} from "../../../Redux/Reducers/QuestionsReducer";
 import { useDispatch } from "react-redux";
 
 const StartmcqQuiz = () => {
   const [topic, setTopic] = useState("");
+  const [customTopic, setCustomTopic] = useState(""); // New state for custom topic
   const [role, setRole] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [numQuestions, setNumQuestions] = useState("");
@@ -35,36 +40,61 @@ const StartmcqQuiz = () => {
   };
 
   const handleStartQuiz = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
     setSnackbarMessage("Wait! Generating questions....");
     setSnackbarSeverity("info");
     setSnackbarOpen(true);
-    e.preventDefault();
+
+    const apiUrl =
+      difficulty === "Easy"
+        ? "http://127.0.0.1:5000/generate_mcq"
+        : "http://127.0.0.1:5003/adaptive_mcq"; // Use the adaptive_mcq API for non-Easy difficulty
 
     try {
-      const response = await axios.post("http://127.0.0.1:5000/generate_mcq", {
-        topic,
-        role,
-        difficulty,
-        num_questions: numQuestions.toString(),
-      });
+      const requestData =
+        difficulty === "Easy"
+          ? { topic: customTopic || topic, role, difficulty, num_questions: numQuestions.toString() }
+          : { topic: customTopic || topic, role, difficulty }; // Adaptive API doesn't need num_questions
+
+      const response = await axios.post(apiUrl, requestData);
 
       setSnackbarOpen(false);
       setSnackbarMessage("Get ready....");
       setSnackbarSeverity("info");
       setSnackbarOpen(true);
 
-      const mcqQuestions = response.data.MCQs.map((item, index) => ({
-        question: item.question,
-        options: item.options,
-        correct_answer: item.correct_answer,
-        explanation: item.explanation,
-        locked: index === 0 ? false : true,
-        isGenerated: true,
-      }));
+      let mcqQuestions;
 
-      dispatch(generateSuccess(mcqQuestions));
-      navigate("/mcqsbox");
+      if (difficulty === "Easy") {
+        mcqQuestions = response.data.MCQs.map((item, index) => ({
+          question: item.question,
+          options: item.options,
+          correct_answer: item.correct_answer,
+          explanation: item.explanation,
+          locked: index === 0 ? false : true,
+          isGenerated: false,
+        }));
+        dispatch(updateQuizType({ quizType: "simple mcqs" }));
+        dispatch(generateSuccess(mcqQuestions));
+        navigate("/mcqsbox");
+      } else {
+        const adaptiveResponse = response.data.next_question;
+        mcqQuestions = [
+          {
+            question: adaptiveResponse.question,
+            options: adaptiveResponse.options,
+            correct_answer: adaptiveResponse.correct_answer,
+            explanation: adaptiveResponse.explanation,
+            locked: false,
+            isGenerated: false,
+          },
+        ];
+        dispatch(updateQuizData({ topic: customTopic || topic, role, difficulty, numQuestions }));
+        dispatch(updateQuizType({ quizType: "adaptive mcqs" }));
+        dispatch(generateSuccess(mcqQuestions));
+        navigate("/adaptivemcqsbox");
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       setSnackbarMessage("Could not get response, please try again!");
@@ -94,7 +124,12 @@ const StartmcqQuiz = () => {
             label="Select Topic"
             variant="outlined"
             value={topic}
-            onChange={(e) => setTopic(e.target.value)}
+            onChange={(e) => {
+              setTopic(e.target.value);
+              if (e.target.value !== "Others") {
+                setCustomTopic(""); // Clear custom topic if a different option is selected
+              }
+            }}
             fullWidth
             margin="normal"
             required
@@ -102,19 +137,22 @@ const StartmcqQuiz = () => {
             <MenuItem value="Programming Fundamentals">
               Programming Fundamentals
             </MenuItem>
-            <MenuItem value="Object Oriented Programming">
-              Object Oriented Programming
-            </MenuItem>
             <MenuItem value="Data Structures and Algorithms">
               Data Structures and Algorithms
             </MenuItem>
-            <MenuItem value="Artificial Intelligence">
-              Artificial Intelligence
-            </MenuItem>
-            <MenuItem value="Others" disabled>
-              Others
-            </MenuItem>
+            <MenuItem value="Others">Others</MenuItem>
           </TextField>
+          {topic === "Others" && (
+            <TextField
+              label="Enter Custom Topic"
+              variant="outlined"
+              value={customTopic}
+              onChange={(e) => setCustomTopic(e.target.value)}
+              fullWidth
+              margin="normal"
+              required
+            />
+          )}
           <TextField
             select
             label="Select Role"

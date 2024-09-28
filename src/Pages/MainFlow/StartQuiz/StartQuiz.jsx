@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Button,
   CircularProgress,
   Container,
   MenuItem,
-  Select,
   Snackbar,
   TextField,
   Typography,
-} from '@mui/material';
-import axios from 'axios';
+} from "@mui/material";
+import axios from "axios";
 import MuiAlert from "@mui/material/Alert";
-import { useNavigate } from 'react-router-dom';
-import { generateSuccess } from '../../../Redux/Reducers/QuestionsReducer';
-import { useDispatch } from 'react-redux';
+import { useNavigate } from "react-router-dom";
+import { generateSuccess, updateQuizType } from "../../../Redux/Reducers/QuestionsReducer";
+import { useDispatch } from "react-redux";
 
 const StartQuiz = () => {
-  const [topic, setTopic] = useState('');
-  const [role, setRole] = useState('');
-  const [difficulty, setDifficulty] = useState('');
-  const [numQuestions, setNumQuestions] = useState('');
+  const [topic, setTopic] = useState("");
+  const [customTopic, setCustomTopic] = useState(""); // New state for custom topic
+  const [role, setRole] = useState("");
+  const [difficulty, setDifficulty] = useState("");
+  const [numQuestions, setNumQuestions] = useState("");
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -33,37 +33,39 @@ const StartQuiz = () => {
     }
     setSnackbarOpen(false);
   };
+
   const handleStartQuiz = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
     setSnackbarMessage("Wait! Generating questions....");
     setSnackbarSeverity("info");
     setSnackbarOpen(true);
-    e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:5002', {
-        topic,
+      const response = await axios.post("http://127.0.0.1:5002", {
+        topic: customTopic || topic, // Use custom topic if provided
         role,
         difficulty,
-        num_questions: numQuestions.toString()
+        num_questions: numQuestions.toString(),
       });
       setSnackbarOpen(false);
       setSnackbarMessage("Get ready....");
       setSnackbarSeverity("info");
       setSnackbarOpen(true);
       const questionsArray = JSON.parse(response.data);
-      const interviewQuestions = questionsArray["Interview Questions"].map((item, index) => ({
-        question: item.question,
-        answer: item.answer,
-        locked : index == 0 ? false : true,
-        isGenerated: false
-      }));
+      const interviewQuestions = questionsArray["Interview Questions"].map(
+        (item, index) => ({
+          question: item.question,
+          answer: item.answer,
+          locked: index === 0 ? false : true,
+          isGenerated: false,
+        })
+      );
 
-      console.log(interviewQuestions);
-      dispatch(generateSuccess(interviewQuestions))
-      navigate('/chatbox')
-
+      dispatch(updateQuizType({ quizType: "open ended" }));
+      dispatch(generateSuccess(interviewQuestions));
+      navigate("/chatbox");
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
       setSnackbarMessage("Could not get response, please try again!");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
@@ -72,10 +74,16 @@ const StartQuiz = () => {
   };
 
   return (
-    <div className='dashboard-container'>
-      <Container maxWidth="md" sx={{ alignItems: 'center' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Typography fontWeight={'bold'} variant="h4" gutterBottom>
+    <div className="dashboard-container">
+      <Container maxWidth="md" sx={{ alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Typography fontWeight={"bold"} variant="h4" gutterBottom>
             Start Quiz
           </Typography>
         </div>
@@ -85,17 +93,38 @@ const StartQuiz = () => {
             label="Select Topic"
             variant="outlined"
             value={topic}
-            onChange={(e) => setTopic(e.target.value)}
+            onChange={(e) => {
+              setTopic(e.target.value);
+              if (e.target.value === "Others") {
+                setCustomTopic(""); // Reset custom topic when selecting "Others"
+              }
+            }}
             fullWidth
             margin="normal"
             required
           >
-            <MenuItem value="Programming Fundamentals">Programming Fundamentals</MenuItem>
-            <MenuItem value="Object Oriented Programming">Object Oriented Programming</MenuItem>
-            <MenuItem value="Data Structures and Algorithms">Data Structures and Algorithms</MenuItem>
-            <MenuItem value="Artificial Intelligence">Artificial Intelligence</MenuItem>
-            <MenuItem value="Others" disabled>Others</MenuItem>
+            <MenuItem value="Programming Fundamentals">
+              Programming Fundamentals
+            </MenuItem>
+            <MenuItem value="Data Structures and Algorithms">
+              Data Structures and Algorithms
+            </MenuItem>
+            <MenuItem value="Others">Others</MenuItem>
           </TextField>
+
+          {/* Conditional rendering for custom topic input */}
+          {topic === "Others" && (
+            <TextField
+              label="Enter Custom Topic"
+              variant="outlined"
+              value={customTopic}
+              onChange={(e) => setCustomTopic(e.target.value)}
+              fullWidth
+              margin="normal"
+              required
+            />
+          )}
+
           <TextField
             select
             label="Select Role"
@@ -108,9 +137,13 @@ const StartQuiz = () => {
           >
             <MenuItem value="Project Manager">Project Manager</MenuItem>
             <MenuItem value="DevOps Engineer">DevOps Engineer</MenuItem>
-            <MenuItem value="MERN Stack Developer">MERN Stack Developer</MenuItem>
+            <MenuItem value="MERN Stack Developer">
+              MERN Stack Developer
+            </MenuItem>
             <MenuItem value="SQA Engineer">SQA Engineer</MenuItem>
-            <MenuItem value="Others" disabled>Others</MenuItem>
+            <MenuItem value="Others" disabled>
+              Others
+            </MenuItem>
           </TextField>
           <TextField
             select
@@ -141,16 +174,28 @@ const StartQuiz = () => {
             <MenuItem value={15}>15</MenuItem>
             <MenuItem value={20}>20</MenuItem>
           </TextField>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <Button
               type="submit"
               variant="contained"
               color="primary"
-              disabled={!topic || !role || !difficulty || !numQuestions || isLoading}
-              sx={{ backgroundColor: '#1976d2' }}
+              disabled={
+                (!customTopic && topic === "Others") || // Disable if custom topic is empty and "Others" is selected
+                !topic || !role || !difficulty || !numQuestions || isLoading
+              }
+              sx={{ backgroundColor: "#1976d2" }}
             >
-              {isLoading ? (<CircularProgress sx={{ color: "primary" }} size={24} />) : (
-                "Start Quiz")}
+              {isLoading ? (
+                <CircularProgress sx={{ color: "primary" }} size={24} />
+              ) : (
+                "Start Quiz"
+              )}
             </Button>
           </div>
         </form>

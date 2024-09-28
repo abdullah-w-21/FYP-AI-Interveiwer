@@ -28,7 +28,7 @@ const History = () => {
   }, [userId]);
 
   const handleCardClick = (quiz) => {
-    navigate('/feedback', { state: { quizData: quiz } });
+    navigate("/feedback", { state: { quizData: quiz } });
   };
 
   if (loading)
@@ -62,8 +62,10 @@ const History = () => {
       </div>
       <Grid container spacing={2}>
         {historyData.map((entry, index) => {
-          // Calculate average score
-          const scores = entry.questions.map((q) => parseFloat(q.score));
+          const scores = entry.questions.map((q) => {
+            const score = parseFloat(q.score);
+            return entry.quizType.includes("mcqs") ? score * 100 : score;
+          });
           const totalScore = scores.reduce((acc, score) => acc + score, 0);
           const averageScore = scores.length ? totalScore / scores.length : 0;
 
@@ -80,7 +82,7 @@ const History = () => {
                 onClick={() => handleCardClick(entry)}
               >
                 <CardContent>
-                  <Typography variant="h4">Quiz {entry.quiz}</Typography>
+                  <Typography variant="h4">Quiz {index + 1}</Typography>
                   <Typography variant="body1" style={{ fontSize: "1.2rem" }}>
                     Average Score: {averageScore.toFixed(2)}%
                   </Typography>

@@ -22,6 +22,7 @@ import {
   toggleLock,
   generateSuccess,
   setGrading,
+  resetGeneration,
 } from "../../../Redux/Reducers/QuestionsReducer";
 import { useNavigate } from "react-router-dom";
 import TypingEffect from "./TypingEffect";
@@ -32,6 +33,7 @@ const ChatBox = () => {
   const navigate = useNavigate();
   const questionsArray = useSelector((state) => state.questions.quiz);
   const lockedState = useSelector((state) => state.questions.quiz);
+  const quizType = useSelector((state) => state.questions.quizType);
   const userId = useSelector((state) => state.auth.user.uid);
   const [lockedIndex, setLockedIndex] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,10 +127,11 @@ const ChatBox = () => {
       await axios.post("http://127.0.0.1:5001/api/quiz", {
         quizId: userId,
         questions: gradingResults,
+        quizType: "open ended",
       });
-
       setIsLoading(false);
       dispatch(toggleLock({ index: questionsArray.length - 1 }));
+      dispatch(resetGeneration());
       navigate("/history");
     } catch (error) {
       console.error("Error grading answers:", error);
@@ -148,7 +151,7 @@ const ChatBox = () => {
       }}
     >
       {questionsArray.map((questionsData, index) =>
-        !lockedState[index].locked ? (
+        !lockedState[index].locked && quizType === "open ended" ? (
           <Card
             key={index}
             variant="outlined"

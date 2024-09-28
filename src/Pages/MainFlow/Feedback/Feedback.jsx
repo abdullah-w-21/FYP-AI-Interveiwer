@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Card, CardContent, Typography, IconButton, Collapse } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+  Collapse,
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useLocation } from "react-router-dom";
@@ -7,6 +13,7 @@ import { useLocation } from "react-router-dom";
 const Feedback = () => {
   const location = useLocation();
   const { quizData } = location.state || { quizData: { questions: [] } };
+  console.log(quizData);
   const [expandedIndex, setExpandedIndex] = useState(-1);
 
   const handleToggleExpand = (index) => {
@@ -15,8 +22,14 @@ const Feedback = () => {
 
   return (
     <div style={{ paddingTop: "5rem" }}>
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Typography fontWeight={'bold'} variant="h4" gutterBottom>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Typography fontWeight={"bold"} variant="h4" gutterBottom>
           Feedbacks
         </Typography>
       </div>
@@ -27,9 +40,11 @@ const Feedback = () => {
           style={{ marginBottom: "3rem", boxShadow: "5px 5px 5px 5px grey" }}
         >
           <CardContent>
-            <div style={{ display: 'flex', flexDirection: "column" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
               <Typography variant="body1" style={{ fontSize: "large" }}>
-                <span style={{ fontWeight: "bold" }}>Question {index + 1}:</span>{" "}
+                <span style={{ fontWeight: "bold" }}>
+                  Question {index + 1}:
+                </span>{" "}
                 {questionsData.question}
               </Typography>
               <br />
@@ -41,12 +56,25 @@ const Feedback = () => {
               <Typography
                 variant="body1"
                 style={{
-                  color: questionsData.score >= 75 ? "green" : "orange",
+                  color:
+                    quizData.quizType === "simple mcqs" ||
+                    quizData.quizType === "adaptive mcqs"
+                      ? parseInt(questionsData.score) === 1
+                        ? "green"
+                        : "red"
+                      : parseInt(questionsData.score) >= 75
+                      ? "green"
+                      : parseInt(questionsData.score) >= 50
+                      ? "orange"
+                      : "red",
+
                   fontSize: "large",
                 }}
               >
-                <span style={{ fontWeight: "bold", color: "black" }}>Score:</span>{" "}
-                {questionsData.score}
+                <span style={{ fontWeight: "bold", color: "black" }}>
+                  Score:
+                </span>{" "}
+                {Math.round(questionsData.score)}
               </Typography>
               <br />
               <Typography variant="body1" style={{ fontSize: "large" }}>
@@ -55,17 +83,32 @@ const Feedback = () => {
               </Typography>
               <br />
               {/* Toggleable explanation */}
-              <Typography variant="body1" style={{ display: "flex", alignItems: "center", fontSize: "large" }}>
+              <Typography
+                variant="body1"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  fontSize: "large",
+                }}
+              >
                 <span style={{ fontWeight: "bold" }}>Explanation:</span>{" "}
                 <IconButton
                   aria-label={expandedIndex === index ? "collapse" : "expand"}
                   onClick={() => handleToggleExpand(index)}
                   size="small"
                 >
-                  {expandedIndex === index ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  {expandedIndex === index ? (
+                    <ExpandLessIcon />
+                  ) : (
+                    <ExpandMoreIcon />
+                  )}
                 </IconButton>
               </Typography>
-              <Collapse in={expandedIndex === index} timeout="auto" unmountOnExit>
+              <Collapse
+                in={expandedIndex === index}
+                timeout="auto"
+                unmountOnExit
+              >
                 <Typography variant="body1" style={{ fontSize: "large" }}>
                   {questionsData.explanation}
                 </Typography>

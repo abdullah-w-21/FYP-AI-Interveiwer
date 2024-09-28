@@ -25,17 +25,20 @@ import {
   updateGeneration,
   toggleLock,
   setGrading,
+  adaptiveQuizUpdate,
   resetGeneration,
 } from "../../../Redux/Reducers/QuestionsReducer";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TypingEffect from "./TypingEffect";
 
-const MCQsBox = () => {
+const AdaptiveMCQsBox = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userId = useSelector((state) => state.auth.user.uid);
   const questionsArray = useSelector((state) => state.questions.quiz);
+  console.log(questionsArray);
+  const quizData = useSelector((state) => state.questions.quizData);
   const quizType = useSelector((state) => state.questions.quizType);
   const [isLoading, setIsLoading] = useState(false);
   const [userResponses, setUserResponses] = useState([]);
@@ -74,61 +77,125 @@ const MCQsBox = () => {
     setLockConfirmationOpen(false);
   };
 
-  const confirmLockConfirmation = (e) => {
+  const [adaptiveResponses, setAdaptiveResponses] = useState([
+    ...questionsArray,
+  ]);
+  console.log(adaptiveResponses);
+  const confirmLockConfirmation = async (e) => {
     e.preventDefault();
-    dispatch(toggleLock({ index: lockedIndex }));
-    setLockConfirmationOpen(false);
+    setIsLoading(true);
+    const currentQuestionData = questionsArray[lockedIndex];
+    const userAnswer = userResponses[lockedIndex];
+    if (!userAnswer) {
+      setSnackbarMessage("Please select an option before locking!");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://127.0.0.1:5003/adaptive_mcq", {
+        topic: quizData.topic,
+        role: quizData.role,
+        difficulty: quizData.difficulty,
+        user_answer: userAnswer,
+        previous_question: currentQuestionData.question,
+        previous_answer: currentQuestionData.correct_answer,
+      });
+
+      const updatedResponses = [...adaptiveResponses, response.data];
+      setAdaptiveResponses(updatedResponses);
+      dispatch(
+        setGrading({
+          index: lockedIndex,
+          score: response.data.grading_result.score,
+          feedback: response.data.grading_result.feedback,
+          explanation: response.data.grading_result.explanation,
+        })
+      );
+      dispatch(adaptiveQuizUpdate(response.data.next_question));
+      dispatch(toggleLock({ index: lockedIndex }));
+      setLockConfirmationOpen(false);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error sending adaptive data:", error);
+      setSnackbarMessage("Failed to send data. Please try again.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setIsLoading(false);
+    }
   };
+
+  const [submitReady, setSubmitReady] = useState(false);
+
+  useEffect(() => {
+    if (submitReady) {
+      const submitFinalAnswers = async () => {
+        const updatedQFinalArray = questionsArray.map((data, index) => ({
+          ...data,
+          userResponse: data.options[userResponses[index]],
+        }));
+        try {
+          await axios.post("http://127.0.0.1:5001/api/quiz", {
+            quizId: userId,
+            questions: updatedQFinalArray,
+            quizType: "adaptive mcqs",
+          });
+          // dispatch(toggleLock({ index: lockedIndex + 1 }));
+          dispatch(resetGeneration());
+          navigate("/history");
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error submitting final answers:", error);
+          setSnackbarMessage("There was an error submitting your answers.");
+          setSnackbarSeverity("error");
+          setSnackbarOpen(true);
+          setIsLoading(false);
+        }
+      };
+
+      submitFinalAnswers();
+      setSubmitReady(false);
+    }
+  }, [questionsArray, submitReady, userId, navigate]);
 
   const handleSubmitAnswers = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    dispatch(updateGeneration(userResponses));
-
-    let gradingResults = [];
+    const lastQuestionData = questionsArray[questionsArray.length - 1];
+    const userAnswer = userResponses[questionsArray.length - 1];
+    if (!userAnswer) {
+      setSnackbarMessage("Please select an option before locking!");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      for (let i = 0; i < userResponses.length; i++) {
-        const response = await axios.post("http://127.0.0.1:5000/grade_mcq", {
-          user_answer: userResponses[i],
-          correct_answer: questionsArray[i].correct_answer,
-          explanation: questionsArray[i].explanation,
-        });
-
-        const grading = response.data;
-        dispatch(
-          setGrading({
-            index: i,
-            score: grading.score,
-            feedback: grading.feedback,
-            explanation: grading.explanation,
-          })
-        );
-
-        gradingResults.push({
-          question: questionsArray[i].question,
-          options: questionsArray[i].options,
-          userResponse: userResponses[i] || "",
-          score: grading.score * 100 || 0,
-          feedback: grading.feedback || "",
-          explanation: grading.explanation || "",
-        });
-      }
-
-      await axios.post("http://127.0.0.1:5001/api/quiz", {
-        quizId: userId,
-        questions: gradingResults,
-        quizType: "simple mcqs",
+      const response = await axios.post("http://127.0.0.1:5003/adaptive_mcq", {
+        topic: quizData.topic,
+        role: quizData.role,
+        difficulty: quizData.difficulty,
+        user_answer: userAnswer,
+        previous_question: lastQuestionData.question,
+        previous_answer: lastQuestionData.correct_answer,
       });
-      setIsLoading(false);
-      dispatch(toggleLock({ index: questionsArray.length - 1 }));
-      dispatch(resetGeneration());
-      navigate("/history");
-    } catch (error) {
-      console.error("Error grading answers:", error);
-      setSnackbarMessage(
-        "There was an error processing your answers. Please try again."
+
+      dispatch(
+        setGrading({
+          index: lockedIndex + 1,
+          score: response.data.grading_result.score,
+          feedback: response.data.grading_result.feedback,
+          explanation: response.data.grading_result.explanation,
+        })
       );
+
+      setSubmitReady(true);
+    } catch (error) {
+      console.error("Error submitting final answers:", error);
+      setSnackbarMessage("There was an error submitting your answers.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
       setIsLoading(false);
@@ -146,7 +213,7 @@ const MCQsBox = () => {
       }}
     >
       {questionsArray.map((questionData, index) =>
-        !questionsArray[index].locked && quizType === "simple mcqs" ? (
+        !questionsArray[index].locked && quizType === "adaptive mcqs" ? (
           <Card
             key={index}
             variant="outlined"
@@ -177,7 +244,7 @@ const MCQsBox = () => {
                   ))}
                 </RadioGroup>
               </FormControl>
-              {index + 1 !== questionsArray.length ? (
+              {quizData.numQuestions !== questionsArray.length ? (
                 <div
                   style={{
                     display: "flex",
@@ -195,7 +262,7 @@ const MCQsBox = () => {
                 </div>
               ) : null}
             </CardContent>
-            {index + 1 === questionsArray.length && (
+            {quizData.numQuestions === questionsArray.length && (
               <div
                 style={{
                   display: "flex",
@@ -248,9 +315,14 @@ const MCQsBox = () => {
             onClick={confirmLockConfirmation}
             color="primary"
             variant="contained"
+            disabled={isLoading}
             autoFocus
           >
-            Yes, Lock
+            {isLoading ? (
+              <CircularProgress sx={{ color: "primary" }} size={24} />
+            ) : (
+              "Yes,Lock "
+            )}
           </Button>
         </DialogActions>
       </Dialog>
@@ -272,4 +344,4 @@ const MCQsBox = () => {
   );
 };
 
-export default MCQsBox;
+export default AdaptiveMCQsBox;
