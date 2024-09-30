@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,13 +9,18 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { resetGeneration } from "../../../Redux/Reducers/QuestionsReducer";
 
 const Feedback = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const { quizData } = location.state || { quizData: { questions: [] } };
   console.log(quizData);
   const [expandedIndex, setExpandedIndex] = useState(-1);
-
+  useEffect(() => {
+    dispatch(resetGeneration());
+  }, []);
   const handleToggleExpand = (index) => {
     setExpandedIndex(index === expandedIndex ? -1 : index);
   };

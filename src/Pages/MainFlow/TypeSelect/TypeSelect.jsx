@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, Typography } from "@mui/material";
 import StartQuiz from "../StartQuiz/StartQuiz"; // Assuming StartQuiz is located here
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { resetGeneration } from "../../../Redux/Reducers/QuestionsReducer";
 
 const TypeSelect = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(resetGeneration());
+  }, []);
   return (
     <div>
       <div

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   CircularProgress,
@@ -14,10 +14,12 @@ import MuiAlert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
 import {
   generateSuccess,
+  resetGeneration,
   updateQuizData,
   updateQuizType,
 } from "../../../Redux/Reducers/QuestionsReducer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { startQuiz } from "../../../Redux/Actions/AuthActions";
 
 const StartmcqQuiz = () => {
   const [topic, setTopic] = useState("");
@@ -31,7 +33,11 @@ const StartmcqQuiz = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.auth.user.uid);
 
+  useEffect(() => {
+    dispatch(resetGeneration());
+  }, []);
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -49,13 +55,19 @@ const StartmcqQuiz = () => {
     const apiUrl =
       difficulty === "Easy"
         ? "http://127.0.0.1:5000/generate_mcq"
-        : "http://127.0.0.1:5003/adaptive_mcq"; // Use the adaptive_mcq API for non-Easy difficulty
+        : "http://127.0.0.1:5003/adaptive_mcq";
 
     try {
+      startQuiz(userId);
       const requestData =
         difficulty === "Easy"
-          ? { topic: customTopic || topic, role, difficulty, num_questions: numQuestions.toString() }
-          : { topic: customTopic || topic, role, difficulty }; // Adaptive API doesn't need num_questions
+          ? {
+              topic: customTopic || topic,
+              role,
+              difficulty,
+              num_questions: numQuestions.toString(),
+            }
+          : { topic: customTopic || topic, role, difficulty };
 
       const response = await axios.post(apiUrl, requestData);
 
@@ -90,7 +102,14 @@ const StartmcqQuiz = () => {
             isGenerated: false,
           },
         ];
-        dispatch(updateQuizData({ topic: customTopic || topic, role, difficulty, numQuestions }));
+        dispatch(
+          updateQuizData({
+            topic: customTopic || topic,
+            role,
+            difficulty,
+            numQuestions,
+          })
+        );
         dispatch(updateQuizType({ quizType: "adaptive mcqs" }));
         dispatch(generateSuccess(mcqQuestions));
         navigate("/adaptivemcqsbox");

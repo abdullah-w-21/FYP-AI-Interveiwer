@@ -15,6 +15,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
+import MicIcon from "@mui/icons-material/Mic";
 import MuiAlert from "@mui/material/Alert";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -44,11 +45,62 @@ const ChatBox = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [errorGrading, setErrorGrading] = useState(false);
   const [lastUserResponse, setLastUserResponse] = useState("");
+  const [recognition, setRecognition] = useState(null);
+  const [micActive, setMicActive] = useState(false);
+
+  useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognitionInstance = new SpeechRecognition();
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = false;
+      recognitionInstance.lang = "en-US";
+      setRecognition(recognitionInstance);
+    }
+  }, []);
 
   const handleAnswerChange = (event, index) => {
     const newResponses = [...userResponses];
     newResponses[index] = event.target.value;
     setUserResponses(newResponses);
+  };
+
+  const handleMicClick = (index) => {
+    if (!recognition) {
+      setSnackbarMessage(
+        "Speech Recognition is not supported on this browser."
+      );
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    if (micActive) {
+      recognition.stop();
+      setMicActive(false);
+    } else {
+      recognition.start();
+      setMicActive(true);
+
+      recognition.onresult = (event) => {
+        const speechResult = event.results[0][0].transcript;
+        const newResponses = [...userResponses];
+        newResponses[index] = speechResult;
+        setUserResponses(newResponses);
+      };
+
+      recognition.onerror = (event) => {
+        // setSnackbarMessage("Speech Recognition Error: " + event.error);
+        // setSnackbarSeverity("error");
+        // setSnackbarOpen(true);
+        setMicActive(false);
+      };
+
+      recognition.onend = () => {
+        setMicActive(false);
+      };
+    }
   };
 
   const handleSnackbarClose = (event, reason) => {
@@ -96,12 +148,10 @@ const ChatBox = () => {
 
         const grading = response.data;
         console.log(grading);
-        // Remove the percentage sign from the similarity score and convert it to a number
         const similarityScore = parseFloat(
           grading.similarity_score.replace("%", "")
         );
 
-        // Ensure both scores are treated as numbers and calculate the average
         const averageScore = (parseFloat(grading.score) + similarityScore) / 2;
         dispatch(
           setGrading({
@@ -123,7 +173,6 @@ const ChatBox = () => {
         setLastUserResponse(userResponses[i]);
       }
 
-      // Send the entire array as a single document
       await axios.post("http://127.0.0.1:5001/api/quiz", {
         quizId: userId,
         questions: gradingResults,
@@ -181,14 +230,52 @@ const ChatBox = () => {
                 margin="normal"
                 required
               />
-              {index + 1 !== questionsArray.length ? (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <IconButton
+                  variant="contained"
+                  color="primary"
+                  onClick={() => handleMicClick(index)}
                 >
+                  <MicIcon
+                    sx={{
+                      color: micActive ? "#ffffff" : "#1976d2",
+                      backgroundColor: micActive ? "#ff4d4d" : "white",
+                      height: "2em",
+                      width: "2em",
+                      borderRadius: "50%",
+                      boxShadow: micActive
+                        ? "0 0 15px rgba(255, 77, 77, 0.6), 0 0 25px rgba(255, 77, 77, 0.8)"
+                        : "0 4px 10px rgba(0, 0, 0, 0.2)",
+                      transition: "all 0.3s ease",
+                      animation: micActive
+                        ? "pulse 1.5s infinite ease-in-out"
+                        : "none",
+                      "@keyframes pulse": {
+                        "0%": {
+                          transform: "scale(1)",
+                          boxShadow:
+                            "0 0 15px rgba(255, 77, 77, 0.6), 0 0 25px rgba(255, 77, 77, 0.8)",
+                        },
+                        "50%": {
+                          transform: "scale(1.1)",
+                          boxShadow:
+                            "0 0 20px rgba(255, 77, 77, 1), 0 0 30px rgba(255, 77, 77, 1)",
+                        },
+                        "100%": {
+                          transform: "scale(1)",
+                          boxShadow:
+                            "0 0 15px rgba(255, 77, 77, 0.6), 0 0 25px rgba(255, 77, 77, 0.8)",
+                        },
+                      },
+                    }}
+                  />
+                </IconButton>
+                {index + 1 !== questionsArray.length && (
                   <IconButton
                     variant="contained"
                     color="error"
@@ -196,8 +283,8 @@ const ChatBox = () => {
                   >
                     <LockIcon />
                   </IconButton>
-                </div>
-              ) : null}
+                )}
+              </div>
             </CardContent>
             {index + 1 === questionsArray.length && (
               <div

@@ -77,5 +77,23 @@ app.get("/api/history/:quizId", async (req, res) => {
   }
 });
 
+app.delete("/api/quiz/:quizId", async (req, res) => {
+  try {
+    const { quizId } = req.params;
+
+    const deletedQuiz = await Quiz.findOneAndDelete({ _id: quizId });
+
+    if (!deletedQuiz) {
+      return res.status(404).json({ error: "Quiz not found" });
+    }
+
+    res.status(200).json({ message: "Quiz deleted successfully" });
+  } catch (err) {
+    console.error("Failed to delete quiz:", err);
+    res.status(500).json({ error: "Failed to delete quiz" });
+  }
+});
+
+
 const port = process.env.PORT || 5001;
 app.listen(port, () => console.log(`Server running on port ${port}`));

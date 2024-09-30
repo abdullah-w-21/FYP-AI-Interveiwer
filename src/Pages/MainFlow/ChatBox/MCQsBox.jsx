@@ -108,8 +108,8 @@ const MCQsBox = () => {
         gradingResults.push({
           question: questionsArray[i].question,
           options: questionsArray[i].options,
-          userResponse: userResponses[i] || "",
-          score: grading.score * 100 || 0,
+          userResponse: questionsArray[i].options[userResponses[i]] || "",
+          score: grading.score || 0,
           feedback: grading.feedback || "",
           explanation: grading.explanation || "",
         });
