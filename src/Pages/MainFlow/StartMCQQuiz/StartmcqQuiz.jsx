@@ -53,14 +53,14 @@ const StartmcqQuiz = () => {
     setSnackbarOpen(true);
 
     const apiUrl =
-      difficulty === "Easy"
+      difficulty === "Easy" || difficulty === "medium"
         ? "http://127.0.0.1:5000/generate_mcq"
         : "http://127.0.0.1:5003/adaptive_mcq";
 
     try {
       startQuiz(userId);
       const requestData =
-        difficulty === "Easy"
+        difficulty === "Easy" || difficulty === "medium"
           ? {
               topic: customTopic || topic,
               role,
@@ -78,7 +78,7 @@ const StartmcqQuiz = () => {
 
       let mcqQuestions;
 
-      if (difficulty === "Easy") {
+      if (difficulty === "Easy" || difficulty === "medium") {
         mcqQuestions = response.data.MCQs.map((item, index) => ({
           question: item.question,
           options: item.options,
@@ -173,7 +173,6 @@ const StartmcqQuiz = () => {
             />
           )}
           <TextField
-            select
             label="Select Role"
             variant="outlined"
             value={role}

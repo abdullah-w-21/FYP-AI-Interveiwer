@@ -164,7 +164,6 @@ const StartQuiz = () => {
           )}
 
           <TextField
-            select
             label="Select Role"
             variant="outlined"
             value={role}
@@ -172,18 +171,7 @@ const StartQuiz = () => {
             fullWidth
             margin="normal"
             required
-          >
-            <MenuItem value="Project Manager">Project Manager</MenuItem>
-            <MenuItem value="DevOps Engineer">DevOps Engineer</MenuItem>
-            <MenuItem value="MERN Stack Developer">
-              MERN Stack Developer
-            </MenuItem>
-            <MenuItem value="SQA Engineer">SQA Engineer</MenuItem>
-            <MenuItem value="Others" disabled>
-              Others
-            </MenuItem>
-          </TextField>
-
+          />
           <TextField
             select
             label="Select Difficulty"
@@ -209,7 +197,7 @@ const StartQuiz = () => {
             margin="normal"
             required
           >
-            <MenuItem value={5}>5</MenuItem>
+            <MenuItem value={2}>5</MenuItem>
             <MenuItem value={10}>10</MenuItem>
             <MenuItem value={15}>15</MenuItem>
             <MenuItem value={20}>20</MenuItem>
