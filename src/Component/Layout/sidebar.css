@@ -1,0 +1,15 @@
+.appbarbackground{
+    /* background: linear-gradient(-45deg, #000080, #3657ff) !important;  */
+    background: linear-gradient(45deg, #153969, #718bab) !important; 
+
+    color: 'white'
+}
+.logo{
+    height: 80px;
+    word-wrap: 80px;
+}
+
+/* @media (max-width: 900px) {
+    .Main_Side_Bar {
+font-size: small !important;     }
+}   */

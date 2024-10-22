@@ -1,0 +1,50 @@
+.form-body {
+    user-select: none;
+  }
+  .form-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    user-select: none;
+  }
+
+  .form-contents {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  .log-sig {
+    border-radius: 25px;
+    border: 3px solid #f1f1f1;
+    max-width: 400px;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .password-container {
+    position: relative;
+  }
+  #togglePassword {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  #togglePassword,
+  #password {
+    right: 2%;
+  }
+
+  .dashboard-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  

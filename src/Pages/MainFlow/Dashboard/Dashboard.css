@@ -1,0 +1,49 @@
+.dashboard-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.gradient {
+  background: linear-gradient(45deg, #153969, #718bab) !important;
+  color: #fff !important;
+}
+
+/* Card hover effects */
+.MuiCard-root {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
+}
+
+.MuiCard-root:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important;
+}
+
+/* Button styles */
+.MuiButton-contained {
+  box-shadow: none !important;
+}
+
+.MuiButton-contained:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .main_box {
+    padding: 16px;
+    width: 95% !important;
+  }
+
+  .MuiCard-root:hover {
+    transform: none;
+  }
+
+  .MuiTypography-h4 {
+    font-size: 1.5rem !important;
+  }
+
+  .MuiTypography-h6 {
+    font-size: 1.1rem !important;
+  }
+}

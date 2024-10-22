@@ -1,0 +1,336 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    font-family: sans-serif;
+}
+#nav-bar{
+    position: sticky;
+    top:0;
+    z-index: 10;
+}
+.navbar .nav-link {
+    color: white; 
+}
+
+.navbar .navbar-brand {
+    color: white; 
+}
+.navbar{
+    /* background: linear-gradient(-45deg, #000080, #3657ff);  */
+    /* background: linear-gradient(-45deg, #153969, #718bab);  */
+     background: linear-gradient(-45deg, #153969, #153969);  
+
+    font-weight: 700;
+    padding: 0 !important;
+    
+}
+/* navbar img */
+ .navbar-brand img {
+    height: 100px;
+    padding-left: 20px;
+} 
+.navbar-nav li
+{
+    padding: 0 10px;
+}
+.navbar-nav li a
+{
+float: right;
+text-align: left;
+}
+.navbar-toggler{
+    outline: none !important;
+}
+/*Navbar-end*/
+
+/*Banner Section*/
+#banner{
+    /* background-image: linear-gradient(-45deg, #718bab, #153969); */
+    background-color: #153969;
+    color: #fff;
+    padding-top: 5%;
+}
+
+.promo-title{
+
+    font-size: 40px;
+    font-weight: 600;
+    margin-top:100px ;
+}
+/*For Banne animation*/
+.img{
+    position: relative;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(400px, #ffff, transparent 50%);
+    margin-top: -50px;
+}
+.email-icon{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 250px;
+    width: 250px;
+}
+.social-icons{
+    height: 100%;
+    animation: rotation 60s linear infinite;
+}
+@keyframes rotation {
+    100%{
+        transform: rotate(360deg);
+    }
+}
+.social-icons img{
+    position: absolute;
+}
+.social-icons img:nth-child(1){
+    top: 0;
+    left: 42%;
+    height: 100px;
+    width: 100px;
+    border-radius: 100%;
+}
+.social-icons img:nth-child(2){
+    top: 25%;
+    right: 0;
+    height: 100px;
+    width: 100px;
+    border-radius: 100%;
+}
+.social-icons img:nth-child(3){
+    top: 70%;
+    left: 70%;
+    height: 100px;
+    width: 100px;
+    border-radius: 100%;
+}
+.social-icons img:nth-child(4){
+    top: 25%;
+    left: 0;
+    height: 100px;
+    width: 100px;
+    border-radius: 100%;
+}
+.social-icons img:nth-child(5){
+    top: 70%;
+    left: 10%;
+    height: 100px;
+    width: 100px;
+    border-radius: 100%;
+}
+/* this for svg for after nav section*/
+/* .bottom-img{
+    width: 100%;
+} */
+
+svg{
+    outline: none;
+}
+
+/*Services Section*/
+
+#services{
+    padding: 80px 0;
+}
+.service-img{
+    width: 200px;
+    margin-top: 20px;
+}
+.services{
+    padding: 20px;
+}
+.services h4{
+    padding: 5px;
+    margin-top: 25px;
+    text-transform: uppercase;
+}
+.title::before{
+    content: '';
+    background: #000080;
+    height: 5px;
+    width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    transform: translateY(63px);
+}
+
+.title::after{
+    content: '';
+    background: #000080;
+    height: 10px;
+    width: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 40px;
+    display: block;
+    transform: translateY(8px);
+}
+
+#services .btn-primary{
+    box-shadow: none;
+    padding: 8px 25px;
+    border: none;
+    border-radius: 20px;
+    /* background-image: linear-gradient(-45deg, #000080, #3657ff); */
+    background-image: linear-gradient(45deg, #153969, #718bab); 
+
+}
+
+/* Hover effect */
+.feature-btn:hover {
+    background-color: #f8f9fa; /* Light background color */
+    color: #000; /* Change text color */
+    transform: scale(1.05); /* Slight zoom on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+}
+
+/*About-Us Section*/
+
+#about-us{
+    background:#f8f9fa;
+    padding-bottom: 50px;
+    padding-top: 50px;
+}
+.about-title{
+    font-size: 40px;
+    font-weight: 600;
+    margin-top: 6%;
+}
+
+#about-us ul{
+    margin-left: 20px;
+}
+#about-us ul li {
+    margin: 10px 0px;
+}
+
+/*Features Section*/
+/* #features {
+background-color: #f8f9fa;
+padding: 100px 0;
+}
+
+#features p{
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+#features img {
+    width: 60px;
+    transition: 0.5s;
+}
+
+#features a:hover img {
+   transform: translateY(-10px);
+} */
+
+
+#features p{
+    /* padding: 80px 0; */
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    
+}
+.feature-img{
+    width: 50%;
+    
+    margin-top: 20px;
+    transition: 0.5s;
+}
+
+.feature-img:hover{
+    transform: translateY(-10px);
+    cursor:pointer;
+}
+.features{
+    padding: 20px;
+}
+.features h5{
+    padding: 5px;
+    margin-top: 25px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+
+
+/*Footer Section*/
+#footer{
+    /* background-image: linear-gradient(-45deg, #000080, #3657ff); */
+    background-image: linear-gradient(45deg, #153969, #718bab); 
+
+    color: #fff;
+}
+.footer-image{
+    width: 100%;
+}
+.footer-box{
+    padding: 20px;
+}
+.footer-box img{
+    width: 220px;
+    margin-bottom: 20px;
+}
+
+.footer-box i{
+    margin-right: 8px;
+    font-size: 25px;
+    height: 40px;
+    width: 40px;
+    text-align: center;
+    padding-top: 7px;
+    border-radius: 2px;
+    /* background-image: linear-gradient(-45deg, #000080, #3657ff); */
+    background: linear-gradient(-45deg, #153969, #718bab); 
+
+
+}
+.fa:hover{
+
+    box-shadow: #fff;
+    cursor:pointer;
+    border-radius: 20px;
+}
+
+
+
+hr{
+    background-color: #fff;
+}
+
+.copyright{
+    margin-top: 10px;
+    margin-bottom: 0;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+
+
+@media (max-width: 769px) {
+    .child_banner {
+        text-align: center; 
+   }
+} 
+ @media (max-width: 769px) {
+    .img {
+     margin-top: 150px !important;
+    }
+} 
+
+@media (max-width: 550px) {
+    .img {
+    display: none;    }
+} 
+
+/*foote responsiveness*/
+@media (max-width: 770px) {
+    #footer {
+    text-align: center !important;    }
+}
